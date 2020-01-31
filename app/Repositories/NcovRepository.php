@@ -63,4 +63,14 @@ class NcovRepository
     {
         return Ncov::find($id);
     }
+
+    /**
+     * Get last ncov info
+     *
+     * @return mixed
+     */
+    public function getLast()
+    {
+        return Ncov::orderBy('id', 'desc')->limit(1)->first();
+    }
 }
