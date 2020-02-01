@@ -164,7 +164,7 @@ class Chart
 
         $markStep = 1440;
 
-        $marksDuration = $this->duration / $markStep;
+        $marksDuration = round($this->duration / $markStep);
 
         $firstRecordDate = clone $this->records[0]->getDate();
 
@@ -293,17 +293,6 @@ class Chart
     }
 
     /**
-     * Calculate point for the record on chart
-     *
-     * @param ChartRecord $record
-     * @return Point
-     */
-    public function calcPoint(ChartRecord $record): Point
-    {
-        return new Point($this->calcX($record), $this->calcY($record));
-    }
-
-    /**
      * Calculate X position for the record on chart
      *
      * @param ChartRecord $record
@@ -312,5 +301,16 @@ class Chart
     public function calcX(ChartRecord $record)
     {
         return ($this->size[0] - $this->margin[0]) / $this->duration * $this->diff($this->records[0], $record) + $this->margin[0];
+    }
+
+    /**
+     * Calculate point for the record on chart
+     *
+     * @param ChartRecord $record
+     * @return Point
+     */
+    public function calcPoint(ChartRecord $record): Point
+    {
+        return new Point($this->calcX($record), $this->calcY($record));
     }
 }
