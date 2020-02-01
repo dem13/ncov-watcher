@@ -164,7 +164,7 @@ class Chart
 
         $markStep = 1440;
 
-        $marksDuration = $this->duration / $markStep;
+        $marksDuration = round($this->duration / $markStep);
 
         $firstRecordDay = clone $this->records[0]->getDate();
 

@@ -11,6 +11,7 @@ use App\Services\NcovService;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Telegram\Bot\Api;
 
 class NcovController extends Controller
 {
@@ -39,11 +40,18 @@ class NcovController extends Controller
     /**
      * Crawl ncov data and store it in database
      *
+     * TODO: REFACTOR
+     * TODO: Get users to notify from database
+     *
      * @param ICrawler $crawler
+     * @param Api $teleram
+     * @param Filesystem $storage
      * @return Response
      * @throws NcovDataIsEmptyException
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \Telegram\Bot\Exceptions\TelegramSDKException
      */
-    public function crawl(ICrawler $crawler): Response
+    public function crawl(ICrawler $crawler, Api $teleram, Filesystem $storage): Response
     {
         $ncovData = $crawler->run();
 
@@ -52,14 +60,39 @@ class NcovController extends Controller
         $lastNcov = $this->ncovRepo->getLast();
 
         if ($this->ncovService->compare($lastNcov, $ncovData)) {
-            return new Response("Data is same");
+            return new Response('Data is same');
         }
 
-        $this->ncovRepo->create($ncovData);
+        $ncov = $this->ncovRepo->create($ncovData);
 
-        //TODO: Notify users about change
+        $chart = new Chart();
 
-        return new Response("Data changed");
+        foreach (['infected', 'deaths', 'cured'] as $field) {
+
+
+            $records = [];
+
+
+            foreach ($this->ncovRepo->get() as $item) {
+                $records[] = new ChartRecord($item->{$field}, $item->created_at);
+            }
+
+            $chart->setRecords($records);
+
+            $image = $chart->render();
+
+            $imagePath = "chart/ncov/{$ncov->id}_{$field}.png";
+
+            $storage->put($imagePath, $image);
+
+            $teleram->sendPhoto([
+                'chat_id' => config('ncov.report.telegram'),
+                'photo' => $storage->readStream($imagePath),
+                'caption' => "{$field}: {$ncov->{$field}}",
+            ]);
+        }
+
+        return new Response('Data changed');
     }
 
     public function chart(string $field, Filesystem $storage): Response
