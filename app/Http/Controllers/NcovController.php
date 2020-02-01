@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Ncov\Chart\Chart;
+use App\Ncov\Chart\ChartRecord;
 use App\Ncov\Crawler\ICrawler;
 use App\Ncov\Exceptions\NcovDataIsEmptyException;
 use App\Repositories\NcovRepository;
 use App\Services\NcovService;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NcovController extends Controller
 {
@@ -56,5 +59,28 @@ class NcovController extends Controller
         //TODO: Notify users about change
 
         return new Response("Data changed");
+    }
+
+    public function chart(string $field): Response
+    {
+        if (!in_array($field, ['deaths', 'infected', 'cured'])) {
+            throw new NotFoundHttpException();
+        }
+
+        $chart = new Chart();
+
+        $records = [];
+
+        foreach ($this->ncovRepo->get() as $ncov) {
+            $records[] = new ChartRecord($ncov->{$field}, $ncov->created_at);
+        }
+
+        $chart->setRecords($records);
+
+        $image = $chart->render();
+
+        return new Response($image, 200, [
+            'Content-Type' => 'image/png',
+        ]);
     }
 }
