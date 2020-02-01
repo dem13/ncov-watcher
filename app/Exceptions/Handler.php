@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Ncov\Exceptions\NcovDataIsEmptyException;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Telegram\Bot\Api;
 
 class Handler extends ExceptionHandler
 {
@@ -36,6 +38,15 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        if ($exception instanceof NcovDataIsEmptyException) {
+            $telegram = new Api(config('telegram.bots.common.token'));
+
+            $telegram->sendMessage([
+                'chat_id' => config('ncov.report.telegram'),
+                'text' => $exception->getMessage()
+            ]);
+        }
+
         parent::report($exception);
     }
 
