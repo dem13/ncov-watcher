@@ -164,18 +164,20 @@ class Chart
 
         $markStep = 1440;
 
-        $marksDuration = round($this->duration / $markStep);
+        $marksDuration = $this->duration / $markStep;
 
-        $firstRecordDate = clone $this->records[0]->getDate();
+        $firstRecordDay = clone $this->records[0]->getDate();
 
         $markWidth = ($width - $this->margin[0]) / $marksDuration;
 
-        $offset = $markWidth * ($firstRecordDate->hour * 60 + $firstRecordDate->minute) / $markStep;
+        $offset = $markWidth * ($firstRecordDay->hour * 60 + $firstRecordDay->minute) / $markStep;
 
         for ($i = 0; $i <= $marksDuration; $i++) {
             $x = $markWidth * $i - $offset + $this->margin[0];
 
             if ($x < 0) {
+                $firstRecordDay->addDay();
+
                 continue;
             }
 
@@ -187,12 +189,12 @@ class Chart
             );
 
             $drawer->text(
-                $firstRecordDate->format('m.d'),
+                $firstRecordDay->format('m.d'),
                 new Font($this->font, 20, $this->colors['text']),
                 new Point($x + 5, $height - 20)
             );
 
-            $firstRecordDate->addDay();
+            $firstRecordDay->addDay();
         }
     }
 
