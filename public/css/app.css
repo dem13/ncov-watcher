@@ -11358,3 +11358,11 @@ a.text-dark:focus {
     }
 }
 
+.chart .chart__item {
+    border-bottom: 2px solid #fff;
+}
+
+.chart .chart__item img {
+    width: 100%;
+}
+

@@ -4,3 +4,13 @@
 @import 'variables';
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.chart {
+    .chart__item {
+        border-bottom: 2px solid #fff;
+
+        img {
+            width: 100%;
+        }
+    }
+}

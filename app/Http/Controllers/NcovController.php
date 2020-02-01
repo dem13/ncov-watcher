@@ -8,6 +8,7 @@ use App\Ncov\Crawler\ICrawler;
 use App\Ncov\Exceptions\NcovDataIsEmptyException;
 use App\Repositories\NcovRepository;
 use App\Services\NcovService;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -61,10 +62,20 @@ class NcovController extends Controller
         return new Response("Data changed");
     }
 
-    public function chart(string $field): Response
+    public function chart(string $field, Filesystem $storage): Response
     {
         if (!in_array($field, ['deaths', 'infected', 'cured'])) {
             throw new NotFoundHttpException();
+        }
+
+        $ncov = $this->ncovRepo->getLast();
+
+        $chartImage = "chart/ncov/{$ncov->id}_{$field}.png";
+
+        if ($storage->exists($chartImage)) {
+            return new Response($storage->get($chartImage), 200, [
+                'Content-type' => 'image/png'
+            ]);
         }
 
         $chart = new Chart();
@@ -78,6 +89,8 @@ class NcovController extends Controller
         $chart->setRecords($records);
 
         $image = $chart->render();
+
+        $storage->put($chartImage, $image);
 
         return new Response($image, 200, [
             'Content-Type' => 'image/png',
