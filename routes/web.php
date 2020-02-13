@@ -19,7 +19,6 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-
 Route::group(['prefix' => 'ncov'], function () {
     Route::get('crawler', 'NcovController@crawl');
 

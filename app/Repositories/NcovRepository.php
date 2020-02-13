@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Ncov;
+use Illuminate\Support\Facades\DB;
 
 class NcovRepository
 {
@@ -72,5 +73,10 @@ class NcovRepository
     public function getLast()
     {
         return Ncov::orderBy('id', 'desc')->limit(1)->first();
+    }
+
+    public function getLatestForEachDay()
+    {
+        return Ncov::query()->selectRaw('ncovs.*')->groupBy(DB::raw('DATE(created_at)'))->get();
     }
 }

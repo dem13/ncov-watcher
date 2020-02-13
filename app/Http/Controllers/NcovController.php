@@ -9,6 +9,7 @@ use App\Ncov\Exceptions\NcovDataIsEmptyException;
 use App\Repositories\NcovRepository;
 use App\Services\NcovService;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Telegram\Bot\Api;
@@ -40,62 +41,26 @@ class NcovController extends Controller
     /**
      * Crawl ncov data and store it in database
      *
-     * TODO: REFACTOR
-     * TODO: Get users to notify from database
-     *
      * @param ICrawler $crawler
-     * @param Api $teleram
+     * @param Api $telegram
      * @param Filesystem $storage
-     * @return Response
+     * @return Response|string
      * @throws NcovDataIsEmptyException
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      * @throws \Telegram\Bot\Exceptions\TelegramSDKException
      */
-    public function crawl(ICrawler $crawler, Api $teleram, Filesystem $storage): Response
+    public function crawl(ICrawler $crawler, Api $telegram, Filesystem $storage)
     {
-        $ncovData = $crawler->run();
-
-        $ncovData = $this->ncovService->validateNcovData($ncovData);
-
-        $lastNcov = $this->ncovRepo->getLast();
-
-        if ($this->ncovService->compare($lastNcov, $ncovData)) {
+        if (!$ncov = $this->ncovService->checkForUpdates($crawler, $telegram, $storage)) {
             return new Response('Data is same');
         }
 
-        $ncov = $this->ncovRepo->create($ncovData);
-
-        $chart = new Chart();
-
-        foreach (['infected', 'deaths', 'cured'] as $field) {
-
-
-            $records = [];
-
-
-            foreach ($this->ncovRepo->get() as $item) {
-                $records[] = new ChartRecord($item->{$field}, $item->created_at);
-            }
-
-            $chart->setRecords($records);
-
-            $image = $chart->render();
-
-            $imagePath = "chart/ncov/{$ncov->id}_{$field}.png";
-
-            $storage->put($imagePath, $image);
-
-            $teleram->sendPhoto([
-                'chat_id' => config('ncov.report.telegram'),
-                'photo' => $storage->readStream($imagePath),
-                'caption' => "{$field}: {$ncov->{$field}}",
-            ]);
-        }
-
-        return new Response('Data changed');
+        return new Response($ncov->toJson(), 200, [
+            'Content-type' => 'application/json'
+        ]);
     }
 
-    public function chart(string $field, Filesystem $storage): Response
+    public function chart(string $field, Request $request, Filesystem $storage): Response
     {
         if (!in_array($field, ['deaths', 'infected', 'cured'])) {
             throw new NotFoundHttpException();
@@ -115,7 +80,7 @@ class NcovController extends Controller
 
         $records = [];
 
-        foreach ($this->ncovRepo->get() as $ncov) {
+        foreach ($request->input('day') ? $this->ncovRepo->getLatestForEachDay() : $this->ncovRepo->get() as $ncov) {
             $records[] = new ChartRecord($ncov->{$field}, $ncov->created_at);
         }
 
