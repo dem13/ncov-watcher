@@ -119,7 +119,7 @@ class NcovService
                 $telegram->sendPhoto([
                     'chat_id' => $chatId,
                     'photo' => $storage->readStream($imagePath),
-                    'caption' => "{$field}: {$ncov->{$field}}",
+                    'caption' => "{$field}: {$ncov->{$field}} (+" . ($ncov->{$field} - $lastNcov->{$field}) . ')',
                 ]);
             }
         }
