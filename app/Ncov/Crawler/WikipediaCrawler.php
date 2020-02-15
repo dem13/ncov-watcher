@@ -11,11 +11,9 @@ class WikipediaCrawler implements ICrawler
     private $uri = 'https://ru.wikipedia.org/wiki/%D0%92%D1%81%D0%BF%D1%8B%D1%88%D0%BA%D0%B0_%D0%BA%D0%BE%D1%80%D0%BE%D0%BD%D0%B0%D0%B2%D0%B8%D1%80%D1%83%D1%81%D0%B0_2019-nCoV';
 
     private $xpathQueries = [
-        ////*[@id="mw-content-text"]/div/table[3]/tbody/tr[29]/td[2]
-        'deaths' => '//*[@id="mw-content-text"]/div/table[4]/tbody/tr[last()]/td[3]/b',
-        //*[@id="mw-content-text"]/div/table[4]/tbody/tr[29]/td[2]/b
+        'deaths' => '//*[@id="mw-content-text"]/div/table[4]/tbody/tr[last()]/td[4]',
         'infected' => '//*[@id="mw-content-text"]/div/table[4]/tbody/tr[last()]/td[2]',
-        'cured' => '//*[@id="mw-content-text"]/div/table[4]/tbody/tr[last()]/td[4]/b',
+        'cured' => '//*[@id="mw-content-text"]/div/table[4]/tbody/tr[last()]/td[5]',
     ];
 
     public function __construct()

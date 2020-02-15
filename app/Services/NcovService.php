@@ -116,10 +116,13 @@ class NcovService
             foreach ([config('ncov.report.telegram'), '-380424566', '-378556426'] as $chatId) {
 
                 //TODO: save uploaded photo id
+
+                $difference = $ncov->{$field} - $lastNcov->{$field};
+
                 $telegram->sendPhoto([
                     'chat_id' => $chatId,
                     'photo' => $storage->readStream($imagePath),
-                    'caption' => "{$field}: {$ncov->{$field}} (+" . ($ncov->{$field} - $lastNcov->{$field}) . ')',
+                    'caption' => "{$field}: {$ncov->{$field}} (" . ($difference >= 0 ? '+' : '') . $difference . ')',
                 ]);
             }
         }
