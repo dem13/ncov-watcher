@@ -8,7 +8,7 @@ class Chat extends Model
 {
     public $incrementing = false;
 
-    protected $fillable = ['type', 'title', 'username', 'first_name', 'last_name', 'description', 'invite_link', 'photo', 'permissions'];
+    protected $fillable = ['type', 'title', 'username', 'first_name', 'last_name', 'description', 'invite_link', 'photo', 'permissions', 'subscribed'];
 
     protected $casts = [
         'photo' => 'array',

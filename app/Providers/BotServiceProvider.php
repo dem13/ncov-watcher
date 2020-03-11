@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\BotKernel\Bot;
 use App\BotKernel\Handlers\Start;
+use App\BotKernel\MessengerContexts\IMessengerContext;
 use App\BotKernel\User\EloquentUserManager;
 use App\BotKernel\User\IBotUserManager;
+use App\Telegram\Repositories\ChatRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,7 +35,21 @@ class BotServiceProvider extends ServiceProvider
     {
         $bot = $this->app->make(Bot::class);
         $bot
-            ->addHandler(Start::class, '/start');
+            ->addHandler(Start::class, '/start')
+            ->addHandler(function (IMessengerContext $messenger, ChatRepository $chatRepo) {
+                $chatRepo->update($messenger->get('chat'), [
+                    'subscribed' => true,
+                ]);
+
+                return 'В этот чат теперь будут приходить обновления';
+            }, '/subscribe')
+            ->addHandler(function (IMessengerContext $messenger, ChatRepository $chatRepo) {
+                $chatRepo->update($messenger->get('chat'), [
+                    'subscribed' => false,
+                ]);
+
+                return 'В этот чат теперь больше не будут приходить обновления';
+            }, '/unsubscribe');
 
         Log::info('Bot is configured');
 
