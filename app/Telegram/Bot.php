@@ -4,6 +4,7 @@ namespace App\Telegram;
 
 use App\BotKernel\Bot as BotBase;
 use App\BotKernel\MessengerContexts\TelegramMessengerContext;
+use App\Telegram\Services\ChatService;
 use App\Telegram\Services\UserService;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
@@ -28,16 +29,22 @@ class Bot
     private $userService;
 
     /**
+     * @var ChatService
+     */
+    private $chatService;
+
+    /**
      * @var Filesystem
      */
     private $storage;
 
-    public function __construct(Api $telegram, BotBase $bot, UserService $userService, Filesystem $storage)
+    public function __construct(Api $telegram, BotBase $bot, UserService $userService, Filesystem $storage, ChatService $chatService)
     {
         $this->telegram = $telegram;
         $this->bot = $bot;
         $this->userService = $userService;
         $this->storage = $storage;
+        $this->chatService = $chatService;
     }
 
     /**
@@ -50,7 +57,11 @@ class Bot
             return;
         }
 
+        $localChat = $this->chatService->findOrCreate($chat);
+
         $messenger = new TelegramMessengerContext();
+
+        $messenger->set('chat', $localChat);
 
         $from = null;
 
