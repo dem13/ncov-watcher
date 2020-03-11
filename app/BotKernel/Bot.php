@@ -42,9 +42,6 @@ class Bot
 
         $messageBack = null;
 
-
-        \Log::debug(print_r($this->handlers, true));
-
         foreach ($this->handlers as $handler) {
             $context = $handler->getContext();
             if (($userContext === $context || $context === true) && $handler->match($messenger)) {

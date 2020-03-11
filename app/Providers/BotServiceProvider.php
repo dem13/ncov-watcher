@@ -3,11 +3,6 @@
 namespace App\Providers;
 
 use App\BotKernel\Bot;
-use App\BotKernel\Handlers\Feedback;
-use App\BotKernel\Handlers\SetCategory;
-use App\BotKernel\Handlers\SetContact;
-use App\BotKernel\Handlers\SetName;
-use App\BotKernel\Handlers\SetPhoto;
 use App\BotKernel\Handlers\Start;
 use App\BotKernel\User\EloquentUserManager;
 use App\BotKernel\User\IBotUserManager;
@@ -25,8 +20,6 @@ class BotServiceProvider extends ServiceProvider
             return new EloquentUserManager();
         });
 
-        Log::debug('here');
-
         $this->app->singleton(Bot::class, function () {
             return new Bot();
         });
@@ -34,8 +27,9 @@ class BotServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap services.
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function boot()
+    public function boot(): void
     {
         $bot = $this->app->make(Bot::class);
         $bot
