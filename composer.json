@@ -15,7 +15,8 @@
         "imagine/imagine": "^1.2",
         "irazasyed/telegram-bot-sdk": "~3",
         "laravel/framework": "^6.2",
-        "laravel/tinker": "^2.0"
+        "laravel/tinker": "^2.0",
+        "ext-libxml": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
