@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04711a733b60e2ff01dcd3e6c71e88ab",
+    "content-hash": "4f6ca6a3b8262795a7724884ca6f623f",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -587,17 +587,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/irazasyed/telegram-bot-sdk.git",
-                "reference": "d2bfd2d8c71947a1274cf6a7a76b55808893e1d2"
+                "reference": "5b6acf5538a4639d87c79fe91ae1e790b246851b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/irazasyed/telegram-bot-sdk/zipball/d2bfd2d8c71947a1274cf6a7a76b55808893e1d2",
-                "reference": "d2bfd2d8c71947a1274cf6a7a76b55808893e1d2",
+                "url": "https://api.github.com/repos/irazasyed/telegram-bot-sdk/zipball/5b6acf5538a4639d87c79fe91ae1e790b246851b",
+                "reference": "5b6acf5538a4639d87c79fe91ae1e790b246851b",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "~6.0",
-                "illuminate/support": "^5.0 || ^6.0",
+                "illuminate/support": "^5.0 || ^6.0 || ^7.0",
                 "league/event": "^2.1",
                 "php": ">=5.6.0"
             },
@@ -650,7 +650,7 @@
                 "telegram php",
                 "telegram sdk"
             ],
-            "time": "2019-10-04T21:27:29+00:00"
+            "time": "2020-03-05T18:26:03+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -6569,12 +6569,15 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "irazasyed/telegram-bot-sdk": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^7.2",
-        "ext-dom": "*"
+        "ext-dom": "*",
+        "ext-libxml": "*"
     },
     "platform-dev": []
 }

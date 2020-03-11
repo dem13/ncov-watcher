@@ -99,7 +99,7 @@ class NcovService
 
             $records = [];
 
-            foreach ($this->ncovRepo->get() as $item) {
+            foreach ($this->ncovRepo->getLatestForEachDay() as $item) {
                 $records[] = new ChartRecord($item->{$field}, $item->created_at);
             }
 
