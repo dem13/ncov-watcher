@@ -68,7 +68,7 @@ class NcovController extends Controller
 
         $ncov = $this->ncovRepo->getLast();
 
-        $chartImage = "chart/ncov/{$ncov->id}_{$field}.png";
+        $chartImage = "chart/ncov/{$ncov->id}_{$field}_" . ($request->has('day') ? 'day' : 'all') . '.png';
 
         if ($storage->exists($chartImage)) {
             return new Response($storage->get($chartImage), 200, [

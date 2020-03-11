@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Ncov;
-use Illuminate\Support\Facades\DB;
 
 class NcovRepository
 {
@@ -77,6 +76,17 @@ class NcovRepository
 
     public function getLatestForEachDay()
     {
-        return Ncov::query()->selectRaw('ncovs.*')->groupBy(DB::raw('DATE(created_at)'))->get();
+        return Ncov::query()
+            ->fromQuery('
+                SELECT  n2.* 
+                FROM ncovs n1 
+                    LEFT JOIN ncovs n2 
+                        ON n2.id=(
+                            SELECT id 
+                            FROM ncovs n3 
+                            WHERE DATE(n3.created_at)=DATE(n1.created_at) 
+                            ORDER BY created_at DESC 
+                            LIMIT 1) 
+                GROUP BY DATE(n1.created_at)');
     }
 }
