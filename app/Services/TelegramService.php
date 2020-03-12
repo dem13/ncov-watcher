@@ -72,6 +72,8 @@ class TelegramService
                 $sent++;
             } catch (\Exception $e) {
                 $failed++;
+
+                \Log::error($e->getMessage());
             }
         }
 
@@ -96,8 +98,9 @@ class TelegramService
             return [];
         }
 
-        $params['photo'] = $this->storage->readStream($path);
-
-        return $this->sendForEachSubscriber(fn ($params) => $this->telegram->sendPhoto($params), $params);
+        return $this->sendForEachSubscriber(function ($params) use ($path) {
+            $params['photo'] = $this->storage->readStream($path);
+            $this->telegram->sendPhoto($params);
+        }, $params);
     }
 }
