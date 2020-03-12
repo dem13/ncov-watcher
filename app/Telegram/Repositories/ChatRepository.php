@@ -3,6 +3,7 @@
 namespace App\Telegram\Repositories;
 
 use App\Telegram\Models\Chat;
+use Illuminate\Support\Collection;
 
 class ChatRepository
 {
@@ -48,5 +49,15 @@ class ChatRepository
     public function find($id): ?Chat
     {
         return Chat::find($id);
+    }
+
+    /**
+     * Get subscribed chats
+     *
+     * @return Collection
+     */
+    public function getSubsbcribed(): Collection
+    {
+        return Chat::where('subscribed', true)->get();
     }
 }
