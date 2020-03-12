@@ -21,12 +21,19 @@ class NcovService
     private $ncovRepo;
 
     /**
+     * @var TelegramService
+     */
+    private $telegramService;
+
+    /**
      * NcovService constructor.
      * @param NcovRepository $ncovRepo
+     * @param TelegramService $telegramService
      */
-    public function __construct(NcovRepository $ncovRepo)
+    public function __construct(NcovRepository $ncovRepo, TelegramService $telegramService)
     {
         $this->ncovRepo = $ncovRepo;
+        $this->telegramService = $telegramService;
     }
 
     /**
@@ -111,20 +118,12 @@ class NcovService
 
             $storage->put($imagePath, $image);
 
-            //TODO: Get chat ids from db
+            $difference = $ncov->{$field} - $lastNcov->{$field};
 
-            foreach ([config('ncov.report.telegram'), '-380424566', '-378556426'] as $chatId) {
-
-                //TODO: save uploaded photo id
-
-                $difference = $ncov->{$field} - $lastNcov->{$field};
-
-                $telegram->sendPhoto([
-                    'chat_id' => $chatId,
-                    'photo' => $storage->readStream($imagePath),
-                    'caption' => "{$field}: {$ncov->{$field}} (" . ($difference >= 0 ? '+' : '') . $difference . ')',
-                ]);
-            }
+            $this->telegramService->sendPhotoToSubscribers($imagePath, [
+                'caption' => "{$field}: {$ncov->{$field}} (" . ($difference >= 0 ? '+' : '') . $difference . ')',
+                'disable_notification' => true
+            ]);
         }
 
         return $ncov;
