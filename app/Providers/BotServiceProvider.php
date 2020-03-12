@@ -42,14 +42,18 @@ class BotServiceProvider extends ServiceProvider
                 ]);
 
                 return 'В этот чат теперь будут приходить обновления';
-            }, '/subscribe')
+            }, function (IMessengerContext $messenger) {
+                return strpos($messenger->getMessage(), '/subscribe') === 0;
+            })
             ->addHandler(function (IMessengerContext $messenger, ChatRepository $chatRepo) {
                 $chatRepo->update($messenger->get('chat'), [
                     'subscribed' => false,
                 ]);
 
                 return 'В этот чат теперь больше не будут приходить обновления';
-            }, '/unsubscribe');
+            }, function (IMessengerContext $messenger) {
+                return strpos($messenger->getMessage(), '/unsubscribe') === 0;
+            });
 
         Log::info('Bot is configured');
 
