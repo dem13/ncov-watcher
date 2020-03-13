@@ -7,9 +7,16 @@
 
 body {
     background: #242a30;
+    color: #fff;
 }
 
 input {
+    background: #343a40 !important;
+    color: #fff !important;
+    border: 1px solid #1b1e21 !important;
+}
+
+textarea {
     background: #343a40 !important;
     color: #fff !important;
     border: 1px solid #1b1e21 !important;
@@ -22,5 +29,13 @@ input {
         img {
             width: 100%;
         }
+    }
+}
+
+.admin-panel {
+    width: 100%;
+
+    &__global-message {
+        max-width: 300px;
     }
 }
