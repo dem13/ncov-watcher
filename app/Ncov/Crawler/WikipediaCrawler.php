@@ -8,13 +8,12 @@ class WikipediaCrawler implements ICrawler
 {
     private $client;
 
-    private $uri = 'https://ru.wikipedia.org/wiki/%D0%92%D1%81%D0%BF%D1%8B%D1%88%D0%BA%D0%B0_COVID-19';
+    private $uri = 'https://en.wikipedia.org/wiki/2019%E2%80%9320_coronavirus_pandemic';
 
     private $xpathQueries = [
-        //*[@id="mw-content-text"]/div/table[2]/tbody/tr[125]/td[2]/b
-        'deaths' => '//*[@id="mw-content-text"]/div/table[2]/tbody/tr[last()]/td[4]',
-        'infected' => '//*[@id="mw-content-text"]/div/table[2]/tbody/tr[last()]/td[2]',
-        'cured' => '//*[@id="mw-content-text"]/div/table[2]/tbody/tr[last()]/td[5]',
+        'deaths' => '//*[@id="mw-content-text"]/div/table[3]/tbody/tr[3]/th[3]',
+        'infected' => '//*[@id="mw-content-text"]/div/table[3]/tbody/tr[3]/th[2]',
+        'cured' => '//*[@id="mw-content-text"]/div/table[3]/tbody/tr[3]/th[4]',
     ];
 
     public function __construct()
@@ -63,7 +62,7 @@ class WikipediaCrawler implements ICrawler
         $result = [];
 
         foreach ($this->xpathQueries as $key => $query) {
-            $result[$key] = str_replace(' ', '', $xpath->query($query)[0]->textContent);
+            $result[$key] = str_replace(',', '', trim($xpath->query($query)[0]->textContent));
         }
         return $result;
     }
