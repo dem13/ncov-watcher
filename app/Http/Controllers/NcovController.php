@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Ncov\Chart\Chart;
-use App\Ncov\Chart\ChartRecord;
 use App\Ncov\Crawler\ICrawler;
 use App\Ncov\Exceptions\NcovDataIsEmptyException;
 use App\Repositories\NcovRepository;
@@ -68,7 +66,7 @@ class NcovController extends Controller
 
         $ncov = $this->ncovRepo->getLast();
 
-        $chartImage = "chart/ncov/{$ncov->id}_{$field}_" . ($request->has('day') ? 'day' : 'all') . '.png';
+        $chartImage = "chart/ncov/{$ncov->id}_{$field}.png";
 
         if ($storage->exists($chartImage)) {
             return new Response($storage->get($chartImage), 200, [
@@ -76,19 +74,7 @@ class NcovController extends Controller
             ]);
         }
 
-        $chart = new Chart();
-
-        $records = [];
-
-        foreach ($request->input('day') ? $this->ncovRepo->getLatestForEachDay() : $this->ncovRepo->get() as $ncov) {
-            $records[] = new ChartRecord($ncov->{$field}, $ncov->created_at);
-        }
-
-        $chart->setRecords($records);
-
-        $image = $chart->render();
-
-        $storage->put($chartImage, $image);
+        $image = $this->ncovService->createChart($field);
 
         return new Response($image, 200, [
             'Content-Type' => 'image/png',

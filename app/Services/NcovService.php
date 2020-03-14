@@ -100,23 +100,12 @@ class NcovService
 
         $ncov = $this->ncovRepo->create($ncovData);
 
-        $chart = new Chart();
-
         foreach (['infected', 'deaths', 'cured'] as $field) {
-
-            $records = [];
-
-            foreach ($this->ncovRepo->getLatestForEachDay() as $item) {
-                $records[] = new ChartRecord($item->{$field}, $item->created_at);
-            }
-
-            $chart->setRecords($records);
-
-            $image = $chart->render();
+            ;
 
             $imagePath = "chart/ncov/{$ncov->id}_{$field}.png";
 
-            $storage->put($imagePath, $image);
+            $storage->put($imagePath, $this->createChart($field));
 
             $difference = $ncov->{$field} - $lastNcov->{$field};
 
@@ -127,5 +116,20 @@ class NcovService
         }
 
         return $ncov;
+    }
+
+    public function createChart($field)
+    {
+        $chart = new Chart();
+
+        $records = [];
+
+        foreach ($this->ncovRepo->getLatestForEachDay() as $item) {
+            $records[] = new ChartRecord($item->{$field}, $item->created_at);
+        }
+
+        $chart->setRecords($records);
+
+        return $chart->render();
     }
 }
