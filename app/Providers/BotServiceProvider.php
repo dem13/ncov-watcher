@@ -36,13 +36,13 @@ class BotServiceProvider extends ServiceProvider
     {
         $bot = $this->app->make(Bot::class);
         $bot
-            ->addHandler(Start::class, '/start')
+            ->addHandler(Start::class, fn (IMessengerContext $messenger) => strpos($messenger->getMessage(), '/start') === 0 || strpos($messenger->getMessage(), '/help') === 0)
             ->addHandler(function (IMessengerContext $messenger, ChatRepository $chatRepo) {
                 $chatRepo->update($messenger->get('chat'), [
                     'subscribed' => true,
                 ]);
 
-                return 'В этот чат теперь будут приходить обновления';
+                return __('You subscribed to coronavirus pandemic updates');
             }, function (IMessengerContext $messenger) {
                 return strpos($messenger->getMessage(), '/subscribe') === 0;
             })
@@ -51,7 +51,7 @@ class BotServiceProvider extends ServiceProvider
                     'subscribed' => false,
                 ]);
 
-                return 'В этот чат теперь больше не будут приходить обновления';
+                return __('You unsubscribed from coronavirus pandemic updates');
             }, function (IMessengerContext $messenger) {
                 return strpos($messenger->getMessage(), '/unsubscribe') === 0;
             })
