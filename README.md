@@ -1,5 +1,5 @@
-# 2019 nCov Watcher
+# 2019 COVID Virus Watcher
 
-2019 nCov Deaths, Infected and Cured watcher
+2019 COVID Virus Deaths, Infected and Cured watcher
 
 ## http://ncov.com.ua
