@@ -26,14 +26,21 @@ class NcovService
     private $telegramService;
 
     /**
+     * @var Filesystem
+     */
+    private $storage;
+
+    /**
      * NcovService constructor.
      * @param NcovRepository $ncovRepo
      * @param TelegramService $telegramService
+     * @param Filesystem $storage
      */
-    public function __construct(NcovRepository $ncovRepo, TelegramService $telegramService)
+    public function __construct(NcovRepository $ncovRepo, TelegramService $telegramService, Filesystem $storage)
     {
         $this->ncovRepo = $ncovRepo;
         $this->telegramService = $telegramService;
+        $this->storage = $storage;
     }
 
     /**
@@ -118,6 +125,12 @@ class NcovService
         return $ncov;
     }
 
+    /**
+     * Create ncov chart for one of the field
+     *
+     * @param $field
+     * @return string
+     */
     public function createChart($field)
     {
         $chart = new Chart();
@@ -131,5 +144,62 @@ class NcovService
         $chart->setRecords($records);
 
         return $chart->render();
+    }
+
+    /**
+     * Get chart existed chart or create one if doesn't exits
+     *
+     * @param $field
+     * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function getChart($field)
+    {
+        $ncov = $this->ncovRepo->getLast();
+
+        $path = $this->chartPath($ncov->id, $field);
+
+        if ($this->storage->exists($path)) {
+            return $this->storage->get($path);
+        }
+
+        $chart = $this->createChart($field);
+
+        $this->storage->put($path, $chart);
+
+        return $chart;
+    }
+
+    /**
+     * Get path to existed chart or to created one
+     *
+     * @param $field
+     * @return string
+     */
+    public function getChartPath($field)
+    {
+        $ncov = $this->ncovRepo->getLast();
+
+        $path = $this->chartPath($ncov->id, $field);
+
+        if (!$this->storage->exists($path)) {
+            $chart = $this->createChart($field);
+
+            $this->storage->put($path, $chart);
+        }
+
+        return $path;
+    }
+
+    /**
+     * Generate chart path
+     *
+     * @param $id
+     * @param $postfix
+     * @return string
+     */
+    private function chartPath($id, $postfix)
+    {
+        return "chart/ncov/chart_{$id}_{$postfix}.png";
     }
 }

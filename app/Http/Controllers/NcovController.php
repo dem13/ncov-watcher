@@ -64,17 +64,7 @@ class NcovController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $ncov = $this->ncovRepo->getLast();
-
-        $chartImage = "chart/ncov/{$ncov->id}_{$field}.png";
-
-        if ($storage->exists($chartImage)) {
-            return new Response($storage->get($chartImage), 200, [
-                'Content-type' => 'image/png'
-            ]);
-        }
-
-        $image = $this->ncovService->createChart($field);
+        $image = $this->ncovService->getChart($field);
 
         return new Response($image, 200, [
             'Content-Type' => 'image/png',

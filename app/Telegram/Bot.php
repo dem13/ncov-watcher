@@ -101,6 +101,26 @@ class Bot
 
         Log::info($answer);
 
+        if ($photo = $messenger->get('reply_photo')) {
+            $this->telegram->sendPhoto([
+                'chat_id' => $chat->getId(),
+                'photo' => $this->storage->readStream($photo),
+                'caption' => $answer
+            ]);
+
+            return;
+        }
+
+        if ($media = $messenger->get('reply_media_group')) {
+
+            $this->telegram->sendMediaGroup([
+                'chat_id' => $chat->getId(),
+                'media' => json_encode($media),
+            ]);
+
+            return;
+        }
+
         if (!$answer) {
             return;
         }
@@ -112,16 +132,6 @@ class Bot
 
         if ($keyboard = $messenger->get('keyboard')) {
             $params['reply_markup'] = $keyboard;
-        }
-
-        if ($photo = $messenger->get('reply_photo')) {
-            $this->telegram->sendPhoto([
-                'chat_id' => $chat->getId(),
-                'photo' => $this->storage->readStream($photo),
-                'caption' => $answer
-            ]);
-
-            return;
         }
 
         $this->telegram->sendMessage($params);
