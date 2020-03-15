@@ -26,7 +26,7 @@ class WikipediaCrawler implements ICrawler
      *
      * @return array
      */
-    public function run(): arrayТЫ
+    public function run(): array
     {
         $html = $this->getHtmlToCrawl();
 
