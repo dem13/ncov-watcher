@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\BotKernel\Bot;
 use App\BotKernel\Handlers\Chart;
+use App\BotKernel\Handlers\NcovInfo;
 use App\BotKernel\Handlers\Start;
 use App\BotKernel\MessengerContexts\IMessengerContext;
 use App\BotKernel\User\EloquentUserManager;
@@ -56,6 +57,9 @@ class BotServiceProvider extends ServiceProvider
             })
             ->addHandler(Chart::class, function (IMessengerContext $messenger) {
                 return strpos($messenger->getMessage(), '/chart') === 0;
+            })
+            ->addHandler(NcovInfo::class, function (IMessengerContext $messenger) {
+                return strpos($messenger->getMessage(), '/info') === 0;
             });
     }
 }
