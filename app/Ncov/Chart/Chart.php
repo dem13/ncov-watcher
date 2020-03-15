@@ -36,14 +36,14 @@ class Chart
      *
      * @var array
      */
-    private $size = [4016, 1636];
+    private $size = [4006, 1606];
 
     /**
      * Chart margin
      *
      * @var array
      */
-    private $margin = [40, 40];
+    private $margin = [50, 70];
 
     /**
      * Image size
@@ -162,7 +162,7 @@ class Chart
     {
         [$width, $height] = $this->size;
 
-        $markStep = 1440;
+        $markStep = 1440 * 2;
 
         $marksDuration = ($this->duration / $markStep);
 
@@ -176,7 +176,7 @@ class Chart
             $x = $markWidth * $i - $offset + $this->margin[0];
 
             if ($x < 0) {
-                $firstRecordDay->addDay();
+                $firstRecordDay->addMinutes($markStep);
 
                 continue;
             }
@@ -191,10 +191,10 @@ class Chart
             $drawer->text(
                 $firstRecordDay->format('m.d'),
                 new Font($this->font, 20, $this->colors['text']),
-                new Point($x + 5, $height - 20)
+                new Point($x + 5, $height + 80)
             );
 
-            $firstRecordDay->addDay();
+            $firstRecordDay->addMinutes($markStep);
         }
     }
 
@@ -205,13 +205,13 @@ class Chart
      */
     private function drawValueMarks(DrawerInterface $drawer): void
     {
-        $markStep = 5;
+        $markStep = 15;
 
         $markHeight = $this->size[1] / $markStep;
 
         $markValue = round($this->getHighestValue() / $markStep);
 
-        for ($j = 0; $j <= 10; $j++) {
+        for ($j = 0; $j <= $markStep; $j++) {
             $y = ($this->size[1]) - $markHeight * $j + $this->margin[1];
 
             if ($y < 0) {
