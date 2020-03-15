@@ -11,9 +11,9 @@ class WikipediaCrawler implements ICrawler
     private $uri = 'https://en.wikipedia.org/wiki/2019%E2%80%9320_coronavirus_pandemic';
 
     private $xpathQueries = [
-        'deaths' => '//*[@id="mw-content-text"]/div/table[3]/tbody/tr[3]/th[3]',
-        'infected' => '//*[@id="mw-content-text"]/div/table[3]/tbody/tr[3]/th[2]',
-        'cured' => '//*[@id="mw-content-text"]/div/table[3]/tbody/tr[3]/th[4]',
+        'deaths' => '//*[@id="mw-content-text"]/div/div[6]/table/tbody/tr[3]/th[3]',
+        'infected' => '//*[@id="mw-content-text"]/div/div[6]/table/tbody/tr[3]/th[2]',
+        'cured' => '//*[@id="mw-content-text"]/div/div[6]/table/tbody/tr[3]/th[4]',
     ];
 
     public function __construct()
@@ -26,7 +26,7 @@ class WikipediaCrawler implements ICrawler
      *
      * @return array
      */
-    public function run(): array
+    public function run(): arrayТЫ
     {
         $html = $this->getHtmlToCrawl();
 
